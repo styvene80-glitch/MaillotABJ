@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
+import { DEVISE_LABEL } from "@/lib/order-config";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrix } = useCart();
@@ -40,7 +40,7 @@ export default function CartPage() {
           href="/"
           className="mt-6 inline-block rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
         >
-          Voir les maillots
+          Commander un maillot
         </Link>
       </div>
     );
@@ -51,16 +51,16 @@ export default function CartPage() {
       <h1 className="text-2xl font-bold">Votre panier</h1>
       <ul className="mt-6 divide-y divide-black/10 dark:divide-white/10">
         {items.map((item) => (
-          <li key={item.slug} className="flex items-center gap-4 py-4">
-            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900">
-              <Image src={item.image} alt={item.nom} fill className="object-cover" />
-            </div>
+          <li key={item.id} className="flex items-center gap-4 py-4">
             <div className="flex-1">
-              <p className="font-medium">{item.nom}</p>
-              <p className="text-sm text-neutral-500">{item.prix} €</p>
+              <p className="font-medium">{item.club}</p>
+              <p className="text-sm text-neutral-500">
+                {item.type} · Taille {item.taille} ·{" "}
+                {item.prix.toLocaleString("fr-FR")} {DEVISE_LABEL}
+              </p>
               <div className="mt-2 flex items-center gap-2">
                 <button
-                  onClick={() => updateQuantity(item.slug, item.quantite - 1)}
+                  onClick={() => updateQuantity(item.id, item.quantite - 1)}
                   className="h-7 w-7 rounded-full border border-black/10 dark:border-white/10"
                   aria-label="Diminuer la quantité"
                 >
@@ -68,27 +68,32 @@ export default function CartPage() {
                 </button>
                 <span className="w-6 text-center">{item.quantite}</span>
                 <button
-                  onClick={() => updateQuantity(item.slug, item.quantite + 1)}
+                  onClick={() => updateQuantity(item.id, item.quantite + 1)}
                   className="h-7 w-7 rounded-full border border-black/10 dark:border-white/10"
                   aria-label="Augmenter la quantité"
                 >
                   +
                 </button>
                 <button
-                  onClick={() => removeItem(item.slug)}
+                  onClick={() => removeItem(item.id)}
                   className="ml-4 text-sm text-red-600 hover:underline"
                 >
                   Retirer
                 </button>
               </div>
             </div>
-            <p className="font-semibold">{item.prix * item.quantite} €</p>
+            <p className="font-semibold">
+              {(item.prix * item.quantite).toLocaleString("fr-FR")}{" "}
+              {DEVISE_LABEL}
+            </p>
           </li>
         ))}
       </ul>
       <div className="mt-6 flex items-center justify-between border-t border-black/10 pt-6 dark:border-white/10">
         <span className="text-lg font-semibold">Total</span>
-        <span className="text-lg font-bold">{totalPrix} €</span>
+        <span className="text-lg font-bold">
+          {totalPrix.toLocaleString("fr-FR")} {DEVISE_LABEL}
+        </span>
       </div>
       {error && (
         <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
@@ -102,6 +107,12 @@ export default function CartPage() {
       >
         {loading ? "Redirection..." : "Passer commande"}
       </button>
+      <Link
+        href="/"
+        className="mt-4 block text-center text-sm text-blue-600 hover:underline"
+      >
+        Ajouter un autre maillot
+      </Link>
     </div>
   );
 }

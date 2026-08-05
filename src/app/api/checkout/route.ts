@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getProductBySlug } from "@/lib/products";
+import {
+  PRIX_UNITAIRE,
+  DEVISE_STRIPE,
+  TYPES_MAILLOT,
+  TAILLES,
+} from "@/lib/order-config";
 
-type CheckoutItem = { slug: string; quantite: number };
+type CheckoutItem = {
+  club: string;
+  type: string;
+  taille: string;
+  quantite: number;
+};
 
 export async function POST(request: NextRequest) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -23,26 +33,33 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Le panier est vide." }, { status: 400 });
   }
 
-  // On recalcule les prix côté serveur à partir du catalogue,
-  // pour ne jamais faire confiance aux prix envoyés par le client.
+  // Le prix unitaire est toujours recalculé côté serveur (prix fixe),
+  // on ne fait jamais confiance à un montant envoyé par le client.
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
   for (const item of items) {
-    const product = getProductBySlug(item.slug);
-    if (!product) {
+    const club = String(item.club ?? "").trim().slice(0, 100);
+    if (!club) {
       return NextResponse.json(
-        { error: `Produit inconnu: ${item.slug}` },
+        { error: "Le nom du club est requis." },
         { status: 400 }
       );
     }
-    const quantite = Math.max(1, Math.min(99, Math.floor(item.quantite)));
+    const type = TYPES_MAILLOT.includes(item.type as (typeof TYPES_MAILLOT)[number])
+      ? item.type
+      : TYPES_MAILLOT[0];
+    const taille = TAILLES.includes(item.taille as (typeof TAILLES)[number])
+      ? item.taille
+      : "M";
+    const quantite = Math.max(1, Math.min(20, Math.floor(item.quantite)));
+
     line_items.push({
       quantity: quantite,
       price_data: {
-        currency: "eur",
-        unit_amount: Math.round(product.prix * 100),
+        currency: DEVISE_STRIPE,
+        unit_amount: PRIX_UNITAIRE,
         product_data: {
-          name: `${product.nom} — ${product.equipe} (${product.saison})`,
-          description: `Taille ${product.taille} · ${product.etat}`,
+          name: `Maillot ${club} — ${type}`,
+          description: `Taille ${taille} · Neuf · Authentique supporter`,
         },
       },
     });
@@ -57,7 +74,7 @@ export async function POST(request: NextRequest) {
       line_items,
       success_url: `${origin}/succes?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/annule`,
-      shipping_address_collection: { allowed_countries: ["FR", "BE", "CH", "LU", "MC"] },
+      shipping_address_collection: { allowed_countries: ["CI", "FR", "SN", "BF", "ML", "TG", "BJ"] },
     });
 
     return NextResponse.json({ url: session.url });

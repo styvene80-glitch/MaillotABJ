@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Ma Boutique de Maillots",
-  description: "Achetez des maillots de football authentiques et d'occasion.",
+  description:
+    "Commandez des maillots de football authentiques supporter, tous clubs et sélections, toutes tailles.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

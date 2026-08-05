@@ -8,28 +8,49 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { Product } from "./products";
+import { PRIX_UNITAIRE, TYPES_MAILLOT, TAILLES, TypeMaillot, Taille } from "./order-config";
 
 export type CartItem = {
-  slug: string;
-  nom: string;
-  prix: number;
-  image: string;
+  id: string;
+  club: string;
+  type: TypeMaillot;
+  taille: Taille;
   quantite: number;
+  prix: number;
 };
+
+type NewCartItem = Omit<CartItem, "id" | "prix">;
 
 type CartContextType = {
   items: CartItem[];
-  addItem: (product: Product) => void;
-  removeItem: (slug: string) => void;
-  updateQuantity: (slug: string, quantite: number) => void;
+  addItem: (item: NewCartItem) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantite: number) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrix: number;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-const STORAGE_KEY = "maillots-shop-cart";
+// v2: schéma "commande sur mesure" (club/type/taille), incompatible avec
+// l'ancien schéma "catalogue fixe" (nom/slug/image) — clé renommée pour ne
+// pas réhydrater d'anciens paniers dans un format inconnu.
+const STORAGE_KEY = "maillots-shop-cart-v2";
+
+function isValidCartItem(value: unknown): value is CartItem {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.id === "string" &&
+    typeof v.club === "string" &&
+    v.club.trim().length > 0 &&
+    TYPES_MAILLOT.includes(v.type as TypeMaillot) &&
+    TAILLES.includes(v.taille as Taille) &&
+    typeof v.quantite === "number" &&
+    v.quantite > 0 &&
+    typeof v.prix === "number"
+  );
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -38,7 +59,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          setItems(parsed.filter(isValidCartItem));
+        }
+      }
     } catch {
       // ignore corrupted storage
     }
@@ -51,38 +77,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, hydrated]);
 
-  function addItem(product: Product) {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.slug === product.slug);
-      if (existing) {
-        return prev.map((i) =>
-          i.slug === product.slug ? { ...i, quantite: i.quantite + 1 } : i
-        );
-      }
-      return [
-        ...prev,
-        {
-          slug: product.slug,
-          nom: `${product.nom} — ${product.equipe}`,
-          prix: product.prix,
-          image: product.image,
-          quantite: 1,
-        },
-      ];
-    });
+  function addItem(item: NewCartItem) {
+    setItems((prev) => [
+      ...prev,
+      {
+        ...item,
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        prix: PRIX_UNITAIRE,
+      },
+    ]);
   }
 
-  function removeItem(slug: string) {
-    setItems((prev) => prev.filter((i) => i.slug !== slug));
+  function removeItem(id: string) {
+    setItems((prev) => prev.filter((i) => i.id !== id));
   }
 
-  function updateQuantity(slug: string, quantite: number) {
+  function updateQuantity(id: string, quantite: number) {
     if (quantite <= 0) {
-      removeItem(slug);
+      removeItem(id);
       return;
     }
     setItems((prev) =>
-      prev.map((i) => (i.slug === slug ? { ...i, quantite } : i))
+      prev.map((i) => (i.id === id ? { ...i, quantite } : i))
     );
   }
 

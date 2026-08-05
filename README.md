@@ -1,7 +1,9 @@
 # Ma Boutique de Maillots ⚽
 
-Boutique en ligne pour vendre des maillots de football, avec catalogue, panier
-et paiement par carte via Stripe Checkout.
+Boutique en ligne pour vendre des maillots de football sur commande : le
+client choisit le club/la sélection, le type (domicile/extérieur/third) et sa
+taille, ajoute au panier et paie par carte via Stripe Checkout. Prix fixe :
+20 000 F CFA (XOF) par maillot.
 
 ## Lancer le projet en local
 
@@ -12,16 +14,21 @@ npm run dev
 
 Ouvrez [http://localhost:3000](http://localhost:3000).
 
-## 1. Ajouter tes vrais maillots
+## 1. Configurer l'offre
 
-Modifie [`src/lib/products.ts`](src/lib/products.ts) : chaque maillot est un
-objet avec `nom`, `equipe`, `saison`, `taille`, `etat`, `prix` (en euros),
-`description` et `image`.
+Modifie [`src/lib/order-config.ts`](src/lib/order-config.ts) pour changer le
+prix unitaire (`PRIX_UNITAIRE`), la devise (`DEVISE_STRIPE` — doit être un
+code devise supporté par Stripe), les types de maillots ou les tailles
+disponibles.
 
-Ajoute tes photos dans `public/products/` (ex: `maillot-1.jpg`) puis
-référence-les dans `image: "/products/maillot-1.jpg"`.
+## 2. Ajouter des photos (optionnel)
 
-## 2. Configurer Stripe (paiement par carte)
+Le formulaire de commande ne montre pas encore de photos (le client précise
+juste le club, le type et la taille). Si tu veux ajouter une galerie
+d'exemples, dépose tes images dans `public/products/` et intègre-les dans
+[`src/app/page.tsx`](src/app/page.tsx).
+
+## 3. Configurer Stripe (paiement par carte)
 
 1. Crée un compte gratuit sur [stripe.com](https://dashboard.stripe.com/register).
 2. Dans le Dashboard Stripe, va dans **Développeurs > Clés API**.
@@ -42,7 +49,7 @@ Quand tu es prêt·e à encaisser du vrai argent, active ton compte Stripe
 (vérification d'identité + coordonnées bancaires) puis remplace `sk_test_...`
 par ta clé `sk_live_...`.
 
-## 3. Déployer en ligne (Vercel, gratuit)
+## 4. Déployer en ligne (Vercel, gratuit)
 
 1. Crée un compte sur [vercel.com](https://vercel.com) (tu peux te connecter
    avec GitHub).
@@ -59,10 +66,17 @@ pour démarrer — tu reçois de toute façon un e-mail de Stripe à chaque vent
 
 ## Structure du projet
 
-- `src/lib/products.ts` — le catalogue (à modifier pour tes maillots)
+- `src/lib/order-config.ts` — prix, devise, types et tailles disponibles
 - `src/lib/cart-context.tsx` — logique du panier (stocké dans le navigateur)
-- `src/app/page.tsx` — page d'accueil / catalogue
-- `src/app/produit/[slug]/page.tsx` — fiche produit
+- `src/components/OrderForm.tsx` — formulaire de commande (club, type, taille, quantité)
+- `src/app/page.tsx` — page d'accueil avec le formulaire
 - `src/app/panier/page.tsx` — panier
-- `src/app/api/checkout/route.ts` — création de la session de paiement Stripe
+- `src/app/api/checkout/route.ts` — création de la session de paiement Stripe (prix recalculé côté serveur)
 - `src/app/succes` / `src/app/annule` — pages après paiement
+
+## Note sur la devise (F CFA)
+
+Stripe accepte le XOF comme devise de paiement, mais vérifie lors de la
+création de ton compte Stripe que le pays choisi permet bien de facturer en
+XOF (sinon, adapte `DEVISE_STRIPE` dans `order-config.ts` vers l'euro ou une
+autre devise supportée par ton compte).
