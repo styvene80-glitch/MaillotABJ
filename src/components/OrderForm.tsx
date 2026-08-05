@@ -28,16 +28,24 @@ export default function OrderForm() {
     setAdded(true);
     setClub("");
     setQuantite(1);
-    setTimeout(() => setAdded(false), 2000);
+    setTimeout(() => setAdded(false), 2500);
   }
 
   return (
     <form
+      id="commander"
       onSubmit={handleSubmit}
-      className="mx-auto mt-8 max-w-md space-y-5 rounded-2xl border border-black/10 p-6 dark:border-white/10"
+      className="mx-auto max-w-lg scroll-mt-24 rounded-3xl border border-border bg-bg-card p-6 shadow-2xl shadow-black/40 sm:p-8"
     >
-      <div>
-        <label htmlFor="club" className="mb-1 block text-sm font-medium">
+      <h2 className="text-xl font-black uppercase tracking-tight">
+        Compose ton maillot
+      </h2>
+      <p className="mt-1 text-sm text-muted">
+        Choisis ton club, le type et ta taille.
+      </p>
+
+      <div className="mt-6">
+        <label htmlFor="club" className="mb-2 block text-xs font-bold uppercase tracking-wide text-muted">
           Club ou sélection nationale
         </label>
         <input
@@ -47,73 +55,89 @@ export default function OrderForm() {
           value={club}
           onChange={(e) => setClub(e.target.value)}
           placeholder="ex: PSG, Côte d'Ivoire, Real Madrid..."
-          className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-blue-600 dark:border-white/10"
+          className="w-full rounded-xl border border-border bg-bg px-4 py-3.5 text-base outline-none transition placeholder:text-muted/70 focus:border-accent"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="type" className="mb-1 block text-sm font-medium">
-            Type
-          </label>
-          <select
-            id="type"
-            value={type}
-            onChange={(e) => setType(e.target.value as TypeMaillot)}
-            className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-blue-600 dark:border-white/10"
-          >
-            {TYPES_MAILLOT.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="taille" className="mb-1 block text-sm font-medium">
-            Taille
-          </label>
-          <select
-            id="taille"
-            value={taille}
-            onChange={(e) => setTaille(e.target.value as Taille)}
-            className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-blue-600 dark:border-white/10"
-          >
-            {TAILLES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+      <div className="mt-6">
+        <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-muted">
+          Type
+        </span>
+        <div className="grid grid-cols-3 gap-2">
+          {TYPES_MAILLOT.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setType(t)}
+              className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${
+                type === t
+                  ? "border-accent bg-accent text-accent-foreground"
+                  : "border-border bg-bg text-foreground/80 hover:border-white/30"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div>
-        <label htmlFor="quantite" className="mb-1 block text-sm font-medium">
+      <div className="mt-6">
+        <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-muted">
+          Taille
+        </span>
+        <div className="grid grid-cols-5 gap-2">
+          {TAILLES.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTaille(t)}
+              className={`rounded-xl border py-3 text-sm font-bold transition ${
+                taille === t
+                  ? "border-accent bg-accent text-accent-foreground"
+                  : "border-border bg-bg text-foreground/80 hover:border-white/30"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
+        <span className="text-xs font-bold uppercase tracking-wide text-muted">
           Quantité
-        </label>
-        <input
-          id="quantite"
-          type="number"
-          min={1}
-          max={20}
-          value={quantite}
-          onChange={(e) => setQuantite(Math.max(1, Number(e.target.value)))}
-          className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 outline-none focus:border-blue-600 dark:border-white/10"
-        />
+        </span>
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-bg px-2 py-1.5">
+          <button
+            type="button"
+            onClick={() => setQuantite((q) => Math.max(1, q - 1))}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-lg font-bold transition hover:bg-white/10"
+            aria-label="Diminuer la quantité"
+          >
+            −
+          </button>
+          <span className="w-6 text-center font-bold">{quantite}</span>
+          <button
+            type="button"
+            onClick={() => setQuantite((q) => Math.min(20, q + 1))}
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-lg font-bold transition hover:bg-white/10"
+            aria-label="Augmenter la quantité"
+          >
+            +
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-neutral-500">
-        <span>Prix unitaire</span>
-        <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="mt-6 flex items-center justify-between border-t border-border pt-6">
+        <span className="text-sm text-muted">Prix unitaire</span>
+        <span className="text-lg font-black">
           {PRIX_UNITAIRE.toLocaleString("fr-FR")} {DEVISE_LABEL}
         </span>
       </div>
 
       <button
         type="submit"
-        className="w-full rounded-full bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+        className="mt-6 w-full rounded-full bg-accent px-6 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95"
       >
         {added ? "Ajouté ✓" : "Ajouter au panier"}
       </button>
@@ -122,7 +146,7 @@ export default function OrderForm() {
         <button
           type="button"
           onClick={() => router.push("/panier")}
-          className="w-full rounded-full border border-black/10 px-6 py-3 font-semibold transition hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/10"
+          className="mt-3 w-full rounded-full border border-border px-6 py-3.5 text-sm font-bold transition hover:bg-white/5"
         >
           Voir le panier
         </button>

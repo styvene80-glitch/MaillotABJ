@@ -34,11 +34,14 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold">Votre panier est vide</h1>
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center">
+        <h1 className="text-2xl font-black uppercase tracking-tight">
+          Votre panier est vide
+        </h1>
+        <p className="mt-2 text-muted">Composez votre maillot en 2 minutes.</p>
         <Link
-          href="/"
-          className="mt-6 inline-block rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+          href="/#commander"
+          className="mt-8 inline-block rounded-full bg-accent px-8 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95"
         >
           Commander un maillot
         </Link>
@@ -47,21 +50,23 @@ export default function CartPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold">Votre panier</h1>
-      <ul className="mt-6 divide-y divide-black/10 dark:divide-white/10">
+    <div className="mx-auto max-w-2xl px-4 py-16">
+      <h1 className="text-2xl font-black uppercase tracking-tight">
+        Votre panier
+      </h1>
+      <ul className="mt-6 divide-y divide-border rounded-2xl border border-border bg-bg-card">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-4 py-4">
+          <li key={item.id} className="flex items-center gap-4 p-5">
             <div className="flex-1">
-              <p className="font-medium">{item.club}</p>
-              <p className="text-sm text-neutral-500">
+              <p className="font-bold">{item.club}</p>
+              <p className="text-sm text-muted">
                 {item.type} · Taille {item.taille} ·{" "}
                 {item.prix.toLocaleString("fr-FR")} {DEVISE_LABEL}
               </p>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-3 flex items-center gap-2">
                 <button
                   onClick={() => updateQuantity(item.id, item.quantite - 1)}
-                  className="h-7 w-7 rounded-full border border-black/10 dark:border-white/10"
+                  className="h-7 w-7 rounded-full border border-border transition hover:bg-white/10"
                   aria-label="Diminuer la quantité"
                 >
                   −
@@ -69,47 +74,47 @@ export default function CartPage() {
                 <span className="w-6 text-center">{item.quantite}</span>
                 <button
                   onClick={() => updateQuantity(item.id, item.quantite + 1)}
-                  className="h-7 w-7 rounded-full border border-black/10 dark:border-white/10"
+                  className="h-7 w-7 rounded-full border border-border transition hover:bg-white/10"
                   aria-label="Augmenter la quantité"
                 >
                   +
                 </button>
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="ml-4 text-sm text-red-600 hover:underline"
+                  className="ml-4 text-sm font-semibold text-accent-2 hover:underline"
                 >
                   Retirer
                 </button>
               </div>
             </div>
-            <p className="font-semibold">
+            <p className="font-black">
               {(item.prix * item.quantite).toLocaleString("fr-FR")}{" "}
               {DEVISE_LABEL}
             </p>
           </li>
         ))}
       </ul>
-      <div className="mt-6 flex items-center justify-between border-t border-black/10 pt-6 dark:border-white/10">
-        <span className="text-lg font-semibold">Total</span>
-        <span className="text-lg font-bold">
+      <div className="mt-6 flex items-center justify-between rounded-2xl border border-border bg-bg-card px-5 py-4">
+        <span className="text-lg font-bold">Total</span>
+        <span className="text-lg font-black">
           {totalPrix.toLocaleString("fr-FR")} {DEVISE_LABEL}
         </span>
       </div>
       {error && (
-        <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+        <p className="mt-4 rounded-xl border border-accent-2/40 bg-accent-2/10 p-4 text-sm text-accent-2">
           {error}
         </p>
       )}
       <button
         onClick={handleCheckout}
         disabled={loading}
-        className="mt-6 w-full rounded-full bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+        className="mt-6 w-full rounded-full bg-accent px-6 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95 disabled:opacity-50"
       >
         {loading ? "Redirection..." : "Passer commande"}
       </button>
       <Link
-        href="/"
-        className="mt-4 block text-center text-sm text-blue-600 hover:underline"
+        href="/#commander"
+        className="mt-4 block text-center text-sm font-semibold text-accent hover:underline"
       >
         Ajouter un autre maillot
       </Link>
