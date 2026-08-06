@@ -88,9 +88,11 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Stripe checkout error:", message);
     return NextResponse.json(
-      { error: "Impossible de créer la session de paiement." },
+      { error: `Impossible de créer la session de paiement : ${message}` },
       { status: 500 }
     );
   }
