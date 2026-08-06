@@ -42,16 +42,11 @@ export default function Gallery({
 
   return (
     <section className="border-b border-border bg-bg-elevated">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-        <div className="text-center">
-          <h2 className="text-2xl font-black uppercase tracking-tight sm:text-3xl">
-            Quelques modèles disponibles
-          </h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-muted">
-            Clique sur un maillot pour choisir sa taille, puis personnalise-le
-            — disponible dans toutes les tailles.
-          </p>
-        </div>
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+        <p className="mx-auto max-w-xl text-center text-sm text-muted">
+          Clique sur un maillot pour choisir sa taille, puis personnalise-le
+          — disponible dans toutes les tailles.
+        </p>
 
         {CATEGORY_ORDER.map((category) => {
           const photos = PHOTOS.filter((p) => p.category === category);

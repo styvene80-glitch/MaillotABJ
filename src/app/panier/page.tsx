@@ -55,7 +55,7 @@ export default function CartPage() {
         </h1>
         <p className="mt-2 text-muted">Composez votre maillot en 2 minutes.</p>
         <Link
-          href="/#commander"
+          href="/commander"
           className="mt-8 inline-block rounded-full bg-accent px-8 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95"
         >
           Commander un maillot
@@ -150,7 +150,7 @@ export default function CartPage() {
         {loading ? "Redirection..." : "Passer commande"}
       </button>
       <Link
-        href="/#commander"
+        href="/commander"
         className="mt-4 block text-center text-sm font-semibold text-accent hover:underline"
       >
         Ajouter un autre maillot

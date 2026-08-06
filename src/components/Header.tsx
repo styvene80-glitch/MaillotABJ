@@ -11,12 +11,24 @@ export default function Header() {
     <header className="sticky top-0 z-20 border-b border-border bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <Logo />
-        <nav className="flex items-center gap-2 sm:gap-4">
+        <nav className="flex items-center gap-1 sm:gap-2">
           <Link
-            href="/#commander"
+            href="/"
+            className="hidden rounded-full px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:text-foreground sm:block"
+          >
+            Accueil
+          </Link>
+          <Link
+            href="/commander"
             className="hidden rounded-full px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:text-foreground sm:block"
           >
             Commander
+          </Link>
+          <Link
+            href="/aide"
+            className="hidden rounded-full px-4 py-2 text-sm font-semibold text-foreground/80 transition hover:text-foreground sm:block"
+          >
+            Aide
           </Link>
           <Link
             href="/panier"

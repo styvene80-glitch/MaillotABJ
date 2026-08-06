@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-border">
@@ -37,12 +39,12 @@ export default function Hero() {
           Maillots neufs, authentiques supporter — commandés en 2 minutes.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <a
-            href="#commander"
+          <Link
+            href="/commander"
             className="w-full rounded-full bg-accent px-8 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95 sm:w-auto"
           >
             Commander maintenant
-          </a>
+          </Link>
           <span className="text-sm font-semibold text-muted">
             20 000 F CFA · prix unique
           </span>
