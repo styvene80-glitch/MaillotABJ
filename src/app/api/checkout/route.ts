@@ -12,6 +12,8 @@ type CheckoutItem = {
   type: string;
   taille: string;
   quantite: number;
+  floqueNom?: string;
+  floqueNumero?: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -51,6 +53,14 @@ export async function POST(request: NextRequest) {
       ? item.taille
       : "M";
     const quantite = Math.max(1, Math.min(20, Math.floor(item.quantite)));
+    const floqueNom = String(item.floqueNom ?? "").trim().slice(0, 20);
+    const floqueNumero = String(item.floqueNumero ?? "")
+      .replace(/[^0-9]/g, "")
+      .slice(0, 2);
+    const flocageLabel =
+      floqueNom || floqueNumero
+        ? ` · Flocage ${floqueNom}${floqueNom && floqueNumero ? " " : ""}${floqueNumero}`
+        : "";
 
     line_items.push({
       quantity: quantite,
@@ -59,7 +69,7 @@ export async function POST(request: NextRequest) {
         unit_amount: PRIX_UNITAIRE,
         product_data: {
           name: `Maillot ${club} — ${type}`,
-          description: `Taille ${taille} · Neuf · Authentique supporter`,
+          description: `Taille ${taille} · Neuf · Authentique supporter${flocageLabel}`,
         },
       },
     });

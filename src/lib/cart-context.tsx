@@ -18,6 +18,8 @@ export type CartItem = {
   quantite: number;
   prix: number;
   image?: string;
+  floqueNom?: string;
+  floqueNumero?: string;
 };
 
 type NewCartItem = Omit<CartItem, "id" | "prix">;
@@ -50,6 +52,8 @@ function isValidCartItem(value: unknown): value is CartItem {
     typeof v.quantite === "number" &&
     v.quantite > 0 &&
     (v.image === undefined || typeof v.image === "string") &&
+    (v.floqueNom === undefined || typeof v.floqueNom === "string") &&
+    (v.floqueNumero === undefined || typeof v.floqueNumero === "string") &&
     typeof v.prix === "number"
   );
 }

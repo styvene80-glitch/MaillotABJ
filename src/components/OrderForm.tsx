@@ -28,6 +28,9 @@ export default function OrderForm({
   const [taille, setTaille] = useState<Taille>("M");
   const [quantite, setQuantite] = useState(1);
   const [image, setImage] = useState<string | null>(null);
+  const [floquage, setFloquage] = useState(false);
+  const [floqueNom, setFloqueNom] = useState("");
+  const [floqueNumero, setFloqueNumero] = useState("");
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
@@ -57,26 +60,31 @@ export default function OrderForm({
       taille,
       quantite,
       image: image ?? undefined,
+      floqueNom: floquage && floqueNom.trim() ? floqueNom.trim() : undefined,
+      floqueNumero:
+        floquage && floqueNumero.trim() ? floqueNumero.trim() : undefined,
     });
     setAdded(true);
     setClub("");
     setQuantite(1);
     setImage(null);
+    setFloquage(false);
+    setFloqueNom("");
+    setFloqueNumero("");
     onClearSelection();
     setTimeout(() => setAdded(false), 2500);
   }
 
   return (
     <form
-      id="commander"
       onSubmit={handleSubmit}
-      className="mx-auto max-w-lg scroll-mt-24 rounded-3xl border border-border bg-bg-card p-6 shadow-2xl shadow-black/40 sm:p-8"
+      className="mx-auto max-w-lg rounded-3xl border border-border bg-bg-card p-6 shadow-2xl shadow-black/40 sm:p-8"
     >
       <h2 className="text-xl font-black uppercase tracking-tight">
-        Compose ton maillot
+        Choisis ta taille
       </h2>
       <p className="mt-1 text-sm text-muted">
-        Choisis ton club, le type et ta taille.
+        Puis personnalise ton maillot si tu le souhaites.
       </p>
 
       {image && (
@@ -185,6 +193,43 @@ export default function OrderForm({
             +
           </button>
         </div>
+      </div>
+
+      <div className="mt-6 border-t border-border pt-6">
+        <label className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            checked={floquage}
+            onChange={(e) => setFloquage(e.target.checked)}
+            className="h-5 w-5 accent-[color:var(--accent)]"
+          />
+          <span className="text-sm font-bold">
+            Personnaliser (flocage nom + numéro)
+          </span>
+        </label>
+        {floquage && (
+          <div className="animate-slide-fade-in mt-3 grid grid-cols-2 gap-2">
+            <input
+              type="text"
+              value={floqueNom}
+              onChange={(e) => setFloqueNom(e.target.value)}
+              placeholder="Nom"
+              maxLength={20}
+              className="rounded-xl border border-border bg-bg px-3 py-2.5 text-sm outline-none transition placeholder:text-muted/70 focus:border-accent"
+            />
+            <input
+              type="text"
+              value={floqueNumero}
+              onChange={(e) =>
+                setFloqueNumero(e.target.value.replace(/[^0-9]/g, ""))
+              }
+              placeholder="Numéro"
+              maxLength={2}
+              inputMode="numeric"
+              className="rounded-xl border border-border bg-bg px-3 py-2.5 text-sm outline-none transition placeholder:text-muted/70 focus:border-accent"
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-6 flex items-center justify-between border-t border-border pt-6">

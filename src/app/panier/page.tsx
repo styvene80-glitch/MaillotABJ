@@ -93,6 +93,13 @@ export default function CartPage() {
                 {item.type} · Taille {item.taille} ·{" "}
                 {item.prix.toLocaleString("fr-FR")} {DEVISE_LABEL}
               </p>
+              {(item.floqueNom || item.floqueNumero) && (
+                <p className="mt-1 text-xs font-semibold text-accent">
+                  Flocage : {item.floqueNom}
+                  {item.floqueNom && item.floqueNumero ? " · " : ""}
+                  {item.floqueNumero && `n° ${item.floqueNumero}`}
+                </p>
+              )}
               <div className="mt-3 flex items-center gap-2">
                 <button
                   onClick={() => updateQuantity(item.id, item.quantite - 1)}
