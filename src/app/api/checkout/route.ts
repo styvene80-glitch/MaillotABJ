@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
         product_data: {
           name: `Maillot ${club} — ${type}`,
           description: `Taille ${taille} · Neuf · Authentique supporter${flocageLabel}`,
+          tax_code: "txcd_99999999", // Vêtements / marchandise générale (requis par Managed Payments)
         },
       },
     });
@@ -88,10 +89,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Stripe checkout error:", message);
+    console.error("Stripe checkout error:", error);
     return NextResponse.json(
-      { error: `Impossible de créer la session de paiement : ${message}` },
+      { error: "Impossible de créer la session de paiement." },
       { status: 500 }
     );
   }
