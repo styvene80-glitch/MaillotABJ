@@ -70,7 +70,6 @@ export async function POST(request: NextRequest) {
         product_data: {
           name: `Maillot ${club} — ${type}`,
           description: `Taille ${taille} · Neuf · Authentique supporter${flocageLabel}`,
-          tax_code: "txcd_99999999", // Vêtements / marchandise générale (requis par Managed Payments)
         },
       },
     });
@@ -79,20 +78,26 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin") ?? request.nextUrl.origin;
   const stripe = new Stripe(secretKey);
 
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items,
-      success_url: `${origin}/succes?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/annule`,
-    });
+  // Managed Payments (activé par défaut sur les comptes Stripe récents) ne
+  // prend en charge que les produits numériques. On le désactive pour cette
+  // session car on vend des maillots, un bien physique.
+  const params: Stripe.Checkout.SessionCreateParams & {
+    managed_payments?: { enabled: boolean };
+  } = {
+    mode: "payment",
+    line_items,
+    success_url: `${origin}/succes?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/annule`,
+    managed_payments: { enabled: false },
+  };
 
+  try {
+    const session = await stripe.checkout.sessions.create(params);
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Stripe checkout error:", message);
+    console.error("Stripe checkout error:", error);
     return NextResponse.json(
-      { error: `Impossible de créer la session de paiement : ${message}` },
+      { error: "Impossible de créer la session de paiement." },
       { status: 500 }
     );
   }
