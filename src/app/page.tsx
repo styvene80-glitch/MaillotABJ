@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import TrustBar from "@/components/TrustBar";
+import Gallery from "@/components/Gallery";
 import OrderForm from "@/components/OrderForm";
 
 export default function Home() {
@@ -7,6 +8,7 @@ export default function Home() {
     <>
       <Hero />
       <TrustBar />
+      <Gallery />
       <div className="mx-auto max-w-2xl px-4 py-16 sm:py-20">
         <OrderForm />
         <p className="mt-6 text-center text-sm text-muted">
