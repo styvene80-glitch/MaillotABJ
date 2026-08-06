@@ -84,15 +84,13 @@ export async function POST(request: NextRequest) {
       line_items,
       success_url: `${origin}/succes?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/annule`,
-      shipping_address_collection: { allowed_countries: ["CI", "FR", "SN", "BF", "ML", "TG", "BJ"] },
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Stripe checkout error:", message);
+    console.error("Stripe checkout error:", error);
     return NextResponse.json(
-      { error: `Impossible de créer la session de paiement : ${message}` },
+      { error: "Impossible de créer la session de paiement." },
       { status: 500 }
     );
   }
