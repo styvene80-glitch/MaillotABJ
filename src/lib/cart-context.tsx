@@ -17,6 +17,7 @@ export type CartItem = {
   taille: Taille;
   quantite: number;
   prix: number;
+  image?: string;
 };
 
 type NewCartItem = Omit<CartItem, "id" | "prix">;
@@ -48,6 +49,7 @@ function isValidCartItem(value: unknown): value is CartItem {
     TAILLES.includes(v.taille as Taille) &&
     typeof v.quantite === "number" &&
     v.quantite > 0 &&
+    (v.image === undefined || typeof v.image === "string") &&
     typeof v.prix === "number"
   );
 }

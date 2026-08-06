@@ -37,7 +37,10 @@ export default function Header() {
             </svg>
             <span className="hidden sm:inline">Panier</span>
             {totalItems > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-bold text-accent-foreground">
+              <span
+                key={totalItems}
+                className="animate-pop flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-xs font-bold text-accent-foreground"
+              >
                 {totalItems}
               </span>
             )}

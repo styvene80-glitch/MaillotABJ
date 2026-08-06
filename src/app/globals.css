@@ -39,3 +39,46 @@ body {
   background: var(--accent);
   color: var(--accent-foreground);
 }
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-pop {
+  animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes check-in {
+  from {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+.animate-check-in {
+  animation: check-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slide-fade-in {
+  from {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-fade-in {
+  animation: slide-fade-in 0.3s ease-out;
+}

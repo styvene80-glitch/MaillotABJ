@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart-context";
 import {
@@ -11,23 +12,57 @@ import {
   TypeMaillot,
   Taille,
 } from "@/lib/order-config";
+import type { Selection } from "./ShopExperience";
 
-export default function OrderForm() {
+export default function OrderForm({
+  selected,
+  onClearSelection,
+}: {
+  selected: Selection | null;
+  onClearSelection: () => void;
+}) {
   const { addItem } = useCart();
   const router = useRouter();
   const [club, setClub] = useState("");
   const [type, setType] = useState<TypeMaillot>(TYPES_MAILLOT[0]);
   const [taille, setTaille] = useState<Taille>("M");
   const [quantite, setQuantite] = useState(1);
+  const [image, setImage] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    if (selected) {
+      setClub(selected.club);
+      if (TYPES_MAILLOT.includes(selected.type as TypeMaillot)) {
+        setType(selected.type as TypeMaillot);
+      }
+      setImage(selected.image);
+    }
+  }, [selected]);
+
+  function handleClubChange(value: string) {
+    setClub(value);
+    if (image) {
+      setImage(null);
+      onClearSelection();
+    }
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!club.trim()) return;
-    addItem({ club: club.trim(), type, taille, quantite });
+    addItem({
+      club: club.trim(),
+      type,
+      taille,
+      quantite,
+      image: image ?? undefined,
+    });
     setAdded(true);
     setClub("");
     setQuantite(1);
+    setImage(null);
+    onClearSelection();
     setTimeout(() => setAdded(false), 2500);
   }
 
@@ -44,6 +79,30 @@ export default function OrderForm() {
         Choisis ton club, le type et ta taille.
       </p>
 
+      {image && (
+        <div className="animate-slide-fade-in mt-5 flex items-center gap-3 rounded-xl border border-accent bg-bg p-3">
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
+            <Image src={image} alt={club} fill className="object-cover" />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold uppercase tracking-wide text-accent">
+              Maillot sélectionné
+            </p>
+            <p className="text-sm font-semibold">{club}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setImage(null);
+              onClearSelection();
+            }}
+            className="text-xs font-semibold text-muted transition hover:text-foreground"
+          >
+            Changer
+          </button>
+        </div>
+      )}
+
       <div className="mt-6">
         <label htmlFor="club" className="mb-2 block text-xs font-bold uppercase tracking-wide text-muted">
           Club ou sélection nationale
@@ -53,7 +112,7 @@ export default function OrderForm() {
           type="text"
           required
           value={club}
-          onChange={(e) => setClub(e.target.value)}
+          onChange={(e) => handleClubChange(e.target.value)}
           placeholder="ex: PSG, Côte d'Ivoire, Real Madrid..."
           className="w-full rounded-xl border border-border bg-bg px-4 py-3.5 text-base outline-none transition placeholder:text-muted/70 focus:border-accent"
         />
@@ -137,7 +196,9 @@ export default function OrderForm() {
 
       <button
         type="submit"
-        className="mt-6 w-full rounded-full bg-accent px-6 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95"
+        className={`mt-6 w-full rounded-full bg-accent px-6 py-4 text-sm font-black uppercase tracking-wide text-accent-foreground transition hover:brightness-95 ${
+          added ? "animate-pop" : ""
+        }`}
       >
         {added ? "Ajouté ✓" : "Ajouter au panier"}
       </button>
@@ -146,7 +207,7 @@ export default function OrderForm() {
         <button
           type="button"
           onClick={() => router.push("/panier")}
-          className="mt-3 w-full rounded-full border border-border px-6 py-3.5 text-sm font-bold transition hover:bg-white/5"
+          className="animate-slide-fade-in mt-3 w-full rounded-full border border-border px-6 py-3.5 text-sm font-bold transition hover:bg-white/5"
         >
           Voir le panier
         </button>

@@ -1,9 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { DEVISE_LABEL } from "@/lib/order-config";
+
+function JerseyPlaceholder() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className="h-7 w-7 text-muted"
+    >
+      <path d="M7 3l3 2h4l3-2 4 4-3 3-1-1v11H7V9l-1 1-3-3 4-4z" />
+    </svg>
+  );
+}
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, totalPrix } = useCart();
@@ -56,7 +71,22 @@ export default function CartPage() {
       </h1>
       <ul className="mt-6 divide-y divide-border rounded-2xl border border-border bg-bg-card">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-4 p-5">
+          <li
+            key={item.id}
+            className="animate-slide-fade-in flex items-center gap-4 p-5"
+          >
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-bg">
+              {item.image ? (
+                <Image
+                  src={item.image}
+                  alt={item.club}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <JerseyPlaceholder />
+              )}
+            </div>
             <div className="flex-1">
               <p className="font-bold">{item.club}</p>
               <p className="text-sm text-muted">
